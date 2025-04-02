@@ -24,8 +24,7 @@ reader.show_struct()
 
 # Read and extract measurement data
 data = reader.read()
-intensity = data['Measurement']['Intensity']
-surface   = data['Measurement']['Thickness']
+surface = data['Measurement']['Thickness']
 
 # Convert nanometers to micrometers
 z_vals  = surface['values'] * 1e-3
