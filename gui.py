@@ -193,11 +193,17 @@ class HDF5_GUI:
 
         for var in selected_vars:
             if var in self.data["Measurement"]:
+                
+                z_vals  = self.data["Measurement"][var]['values']
+                no_data = self.data["Measurement"][var]['attributes']['No Data']
 
+                z_unit = self.data["Measurement"][var]['attributes']['Unit']
+                if z_unit == "NanoMeters":
                 # From nanometer to micrometer
-                z_vals  = self.data["Measurement"][var]['values'] * 1e-3  
-                no_data = self.data["Measurement"][var]['attributes']['No Data'] * 1e-3
-
+                    z_vals  *= 1e-3  
+                    no_data *= 1e-3
+                    z_unit   = "μm"
+                
                 x_grid, y_grid = np.meshgrid(np.arange(0, z_vals.shape[1]),
                                              np.arange(0, z_vals.shape[0]))
                 
@@ -224,8 +230,8 @@ class HDF5_GUI:
                 z_max = np.nanmax(z)
                 tickz = np.linspace(z_min, z_max, num=9, endpoint=True)
                 tickl = [f"{v:.2f}" for v in tickz] 
-                tickl[ 0] = tickl[ 0] + " μm"
-                tickl[-1] = tickl[-1] + " μm"
+                tickl[ 0] = f'{tickl[ 0]} {z_unit}'
+                tickl[-1] = f'{tickl[-1]} {z_unit}'
                
                 self.colorbar = self.figure.colorbar(im, ax=self.ax)
                 self.colorbar.set_ticks(tickz)
