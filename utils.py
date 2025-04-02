@@ -25,20 +25,20 @@ def fill_nodata(X, Y, Z, thr):
 
     Returns
     -------
-    Z : 2darray
+    z : 2darray
         The modified Z array with missing values interpolated using the nearest-neighbor method.
     '''
+    z = np.copy(Z)
+    z = z.astype(float)
+    z[z == thr] = np.nan
 
-    Z = Z.astype(float)
-    Z[Z == thr] = np.nan
-
-    mask = ~np.isnan(Z)
+    mask = ~np.isnan(z)
 
     points = np.column_stack((X[mask], Y[mask]))
-    values = Z[mask]
-    Z      = griddata(points, values, (X, Y), method='nearest')
+    values = z[mask]
+    z      = griddata(points, values, (X, Y), method='nearest')
     
-    return Z
+    return z
 
 
 def remove_nodata(Z, thr):

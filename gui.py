@@ -73,7 +73,9 @@ class HDF5_GUI:
         self.save_button = tk.Button(self.left_frame, text="Save Plot",
                                      command=self.save_plot).pack(pady=5, fill=tk.X)
 
- 
+        self.save_button = tk.Button(self.left_frame, text="Save current data",
+                                     command=self.save_data).pack(pady=5, fill=tk.X)
+        
         # Section of the window for the plot 
         self.figure, self.ax = plt.subplots(figsize=(5, 5))
         self.canvas = FigureCanvasTkAgg(self.figure, master=self.right_frame)
@@ -83,7 +85,7 @@ class HDF5_GUI:
         self.reader   = None
         self.data     = None
         self.colorbar = None
-
+        self.last_dat = []
 
 
     def load_file(self):
@@ -100,9 +102,7 @@ class HDF5_GUI:
             self.tree.delete(*self.tree.get_children())
             self.var_listbox.delete(0, tk.END)
 
-            
             self.populate_tree(self.tree, self.data)
-
             
             if "Measurement" in self.data:
                 for var, val in self.data["Measurement"].items():
@@ -172,11 +172,12 @@ class HDF5_GUI:
             messagebox.showerror("Error", "No files loaded")
             return
         
-        selected_idx  = self.var_listbox.curselection()
-        selected_vars = [self.var_listbox.get(i) for i in selected_idx]
+        try :
+            idx = self.var_listbox.curselection()
+            var = self.var_listbox.get(idx[0])
 
-        if not selected_vars:
-            messagebox.showerror("Error", "Select at least one quantity")
+        except :
+            messagebox.showerror("Error", "Select one quantity")
             return
 
         # Manages window cleaning
@@ -190,55 +191,57 @@ class HDF5_GUI:
             self.figure.canvas.draw_idle() 
         
         self.ax.cla()
+       
+        z_vals  = np.copy(self.data["Measurement"][var]['values'])
+        no_data = self.data["Measurement"][var]['attributes']['No Data']
 
-        for var in selected_vars:
-            if var in self.data["Measurement"]:
-                
-                z_vals  = self.data["Measurement"][var]['values']
-                no_data = self.data["Measurement"][var]['attributes']['No Data']
+        z_unit = self.data["Measurement"][var]['attributes']['Unit']
+        if z_unit == "NanoMeters":
+        # From nanometer to micrometer
+            z_vals  *= 1e-3  
+            no_data *= 1e-3
+            z_unit   = "μm"
+        
+        x_grid, y_grid = np.meshgrid(np.arange(0, z_vals.shape[1]),
+                                     np.arange(0, z_vals.shape[0]))
+        
+        # From arbitrary units in micrometers
+        x_grid = x_grid * self.data["Measurement"][var]['attributes']['X Converter']['Parameters'][1] * 1e6
+        y_grid = y_grid * self.data["Measurement"][var]['attributes']['Y Converter']['Parameters'][1] * 1e6
 
-                z_unit = self.data["Measurement"][var]['attributes']['Unit']
-                if z_unit == "NanoMeters":
-                # From nanometer to micrometer
-                    z_vals  *= 1e-3  
-                    no_data *= 1e-3
-                    z_unit   = "μm"
-                
-                x_grid, y_grid = np.meshgrid(np.arange(0, z_vals.shape[1]),
-                                             np.arange(0, z_vals.shape[0]))
-                
-                # From arbitrary units in micrometers
-                x_grid = x_grid * self.data["Measurement"][var]['attributes']['X Converter']['Parameters'][1] * 1e6
-                y_grid = y_grid * self.data["Measurement"][var]['attributes']['Y Converter']['Parameters'][1] * 1e6
+        # Operation to do 
+        if op == 'raw':
+            z = remove_nodata(z_vals, no_data)
 
-                # Operation to do 
-                if op == 'raw':
-                    z = remove_nodata(z_vals, no_data)
+        if op == 'fill':
+            z = fill_nodata(x_grid, y_grid, z_vals, no_data)
 
-                if op == 'fill':
-                    z = fill_nodata(x_grid, y_grid, z_vals, no_data)
+        if op == 'baseline':
+            z    = fill_nodata(x_grid, y_grid, z_vals, no_data)
+            _, z = remove_offset(x_grid, y_grid, z)
+        
+        # Store current selected data
+        self.last_dat.append(x_grid)
+        self.last_dat.append(y_grid)
+        self.last_dat.append(z)
 
-                if op == 'baseline':
-                    z    = fill_nodata(x_grid, y_grid, z_vals, no_data)
-                    _, z = remove_offset(x_grid, y_grid, z)
-                
-                # Plot
-                im = self.ax.pcolormesh(x_grid, y_grid, z, cmap='plasma')
-                
-                # Color bar and plot setting
-                z_min = np.nanmin(z)
-                z_max = np.nanmax(z)
-                tickz = np.linspace(z_min, z_max, num=9, endpoint=True)
-                tickl = [f"{v:.2f}" for v in tickz] 
-                tickl[ 0] = f'{tickl[ 0]} {z_unit}'
-                tickl[-1] = f'{tickl[-1]} {z_unit}'
-               
-                self.colorbar = self.figure.colorbar(im, ax=self.ax)
-                self.colorbar.set_ticks(tickz)
-                self.colorbar.set_ticklabels(tickl)
-                self.ax.set_aspect('equal')
-                plt.xlabel('x [μm]', fontsize=15)
-                plt.ylabel('y [μm]', fontsize=15)
+        # Plot
+        im = self.ax.pcolormesh(x_grid, y_grid, z, cmap='plasma')
+        
+        # Color bar and plot setting
+        z_min = np.nanmin(z)
+        z_max = np.nanmax(z)
+        tickz = np.linspace(z_min, z_max, num=9, endpoint=True)
+        tickl = [f"{v:.2f}" for v in tickz] 
+        tickl[ 0] = f'{tickl[ 0]} {z_unit}'
+        tickl[-1] = f'{tickl[-1]} {z_unit}'
+        
+        self.colorbar = self.figure.colorbar(im, ax=self.ax)
+        self.colorbar.set_ticks(tickz)
+        self.colorbar.set_ticklabels(tickl)
+        self.ax.set_aspect('equal')
+        plt.xlabel('x [μm]', fontsize=15)
+        plt.ylabel('y [μm]', fontsize=15)
 
         self.canvas.draw()
 
@@ -275,6 +278,48 @@ class HDF5_GUI:
         try:
             self.figure.savefig(filepath, bbox_inches='tight')
             messagebox.showinfo("Saving completed", f"Plot saved in:\n{filepath}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Unable to save the plot: {e}")
+
+
+    def save_data(self):
+        '''
+        Function for saving the current selected data in csv ot txt file
+        '''
+
+        if self.reader is None or self.data is None:
+            messagebox.showerror("Error", "No files loaded")
+            return
+        
+        if not self.last_dat:
+            msg_0 = 'To save the file you must first make the plot,'
+            msg_1 = 'the data will be saved as they are displayed'
+            messagebox.showerror("Error", f"{msg_0} {msg_1}")
+            return
+        
+        idx = self.var_listbox.curselection()
+        var = self.var_listbox.get(idx)
+
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".txt",
+            filetypes=[("Text files", "*.txt"), 
+                       ("csv files","*.csv")],
+            initialfile=f"{var}.txt",
+        )
+
+        if not file_path:
+            return
+        
+        try:
+            
+            with open(file_path, "w") as f:
+                for matrix in self.last_dat:
+                    np.savetxt(f, matrix)
+                    f.write("\n")
+
+            messagebox.showinfo("Saving completed", f"Data saved in:\n{file_path}")
+            del self.last_dat[:]
+
         except Exception as e:
             messagebox.showerror("Error", f"Unable to save the plot: {e}")
 
