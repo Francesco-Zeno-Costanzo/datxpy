@@ -17,9 +17,10 @@ class HDF5Reader:
     -------
     >>> import numpy as np
     >>> import matplotlib.pyplot as plt
+    >>> from reader import HDF5Reader
     >>> from utils import fill_nodata, remove_nodata  # Import utility functions
 
-    >>> file_path = "c2701-spessore.datx"
+    >>> file_path = "---.datx"
     >>> reader = HDF5Reader(file_path)
 
     # Display file structure

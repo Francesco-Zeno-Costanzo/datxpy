@@ -3,15 +3,17 @@ Simple code to read and display data files in .datx format
 
 ## HDF5Reader
 
-A class to read and decode HDF5 (.datx) files, converting their contents into Python dictionaries.
+reader.py contains a class to read and decode HDF5 (.datx) files, converting their contents into Python dictionaries.
 This class allows programmatic access to HDF5 data, but the same operations 
 can also be performed via a graphical user interface (GUI) by running gui.py
 
-### Usage
+### Usage in code
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
+
+from reader import HDF5Reader
 from utils import fill_nodata, remove_nodata  # Import utility functions
 
 file_path = "c2701-spessore.datx"
