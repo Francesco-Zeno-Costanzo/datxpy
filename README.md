@@ -5,6 +5,16 @@
 
 Simple code to read and display data files in .datx format
 
+## Installation 
+For now, the only way to install **datxpy** is by cloning the repository:
+
+```bash
+git clone https://github.com/Francesco-Zeno-Costanzo/datxpy.git
+cd datxpy
+pip install -r requirements.txt
+pip install 
+```
+
 ## HDF5Reader
 
 reader.py contains a class to read and decode HDF5 (.datx) files, converting their contents into Python dictionaries.

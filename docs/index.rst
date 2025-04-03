@@ -50,9 +50,9 @@ Directly from the GitHub repository:
 
 .. code-block:: bash
 
-    git clone https://github.com/Francesco-Zeno-Costanzo/datxpy.git
-    cd datxpy
-    pip install -e .
+   git clone https://github.com/Francesco-Zeno-Costanzo/datxpy.git
+   cd datxpy
+   pip install .
 
 To launch the graphical interface:
 
