@@ -58,7 +58,7 @@ To launch the graphical interface:
 
 .. code-block:: bash
 
-   hysteresis-analysis
+   datxpy-gui
 
 -----------------
 

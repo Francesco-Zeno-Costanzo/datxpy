@@ -119,7 +119,8 @@ class HDF5Reader:
         Recursively decodes an HDF5 group, dataset, or attribute into a Python dictionary,
         handling different data types such as numpy arrays, lists, and byte strings.
         
-        Parameters:
+        Parameters
+        ----------
         g : h5py.Group, h5py.Dataset, h5py.AttributeManager, np.ndarray, bytes, list, tuple
             The HDF5 group, dataset, attribute, or other data structure to decode.
 

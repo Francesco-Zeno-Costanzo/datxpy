@@ -1,20 +1,27 @@
 # datxpy
+
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Documentation Status](https://readthedocs.org/projects/datxpy/badge/?version=latest)](https://datxpy.readthedocs.io/en/latest/?badge=latest)
+
 Simple code to read and display data files in .datx format
 
 ## HDF5Reader
 
 reader.py contains a class to read and decode HDF5 (.datx) files, converting their contents into Python dictionaries.
 This class allows programmatic access to HDF5 data, but the same operations 
-can also be performed via a graphical user interface (GUI) by running gui.py
+can also be performed via a graphical user interface (GUI). 
+The GUI also implements some possible operations to be done to possibly improve the quality of the data.
 
 ### Usage in code
-
+It is possible to import only the module for reading the file into your code and then perform the analysis of the case you are interested in.
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 
 from datxpy.reader import HDF5Reader
-from datxpy.utils import fill_nodata, remove_nodata  # Import utility functions
+from datxpy.utils import fill_nodata, remove_nodata
+# Import utility functions as these are normal operations
+# that you might want to do (they are the same ones implemented in the GUI)
 
 file_path = "---.datx"
 reader = HDF5Reader(file_path)
@@ -57,5 +64,5 @@ plt.show()
 ## GUI usage
 You only need to run:
 ```bash
-python3 gui.py
+datxpy-gui
 ```
