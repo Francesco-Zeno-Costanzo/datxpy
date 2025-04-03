@@ -17,30 +17,25 @@ class HDF5Reader:
     -------
     >>> import numpy as np
     >>> import matplotlib.pyplot as plt
-    >>> from reader import HDF5Reader
-    >>> from utils import fill_nodata, remove_nodata  # Import utility functions
+    >>> from datxpy.reader import HDF5Reader
+    >>> from datxpy.utils import fill_nodata, remove_nodata  # Import utility functions
 
     >>> file_path = "---.datx"
     >>> reader = HDF5Reader(file_path)
 
-    # Display file structure
     >>> reader.show_struct()
 
-    # Read and extract measurement data
     >>> data = reader.read()
     >>> surface = data['Measurement']['Thickness']
 
-    # Convert nanometers to micrometers
     >>> z_vals  = surface['values'] * 1e-3
     >>> no_data = surface['attributes']['No Data'] * 1e-3
 
-    # Create the grid for plotting
     >>> x_grid, y_grid = np.meshgrid(np.arange(0, z_vals.shape[1]),
     ...                              np.arange(0, z_vals.shape[0]))
     >>> x_grid = x_grid * surface['attributes']['X Converter']['Parameters'][1] * 1e6
     >>> y_grid = y_grid * surface['attributes']['Y Converter']['Parameters'][1] * 1e6
 
-    # Remove no-data values and plot initial data
     >>> z_vals = remove_nodata(z_vals, no_data)
     >>> plt.pcolormesh(x_grid, y_grid, z_vals, cmap='plasma')
     >>> plt.xlabel('x [μm]', fontsize=15)
@@ -48,10 +43,8 @@ class HDF5Reader:
     >>> cbar = plt.colorbar()
     >>> plt.show()
 
-    # Process data: fill missing values
     >>> z_vals = fill_nodata(x_grid, y_grid, z_vals, no_data)
 
-    # Plot final processed data
     >>> plt.pcolormesh(x_grid, y_grid, z_vals, cmap='plasma')
     >>> plt.xlabel('x [μm]', fontsize=15)
     >>> plt.ylabel('y [μm]', fontsize=15)

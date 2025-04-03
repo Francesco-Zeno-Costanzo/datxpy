@@ -5,8 +5,8 @@ from tkinter import filedialog, messagebox, ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
-from utils import *
-from reader import HDF5Reader
+from datxpy.reader import HDF5Reader
+from datxpy.utils import *
 
 class HDF5_GUI:
     '''
@@ -323,9 +323,10 @@ class HDF5_GUI:
         except Exception as e:
             messagebox.showerror("Error", f"Unable to save the plot: {e}")
 
-
-if __name__ == "__main__":
-    
+def main():
     root = tk.Tk()
     app  = HDF5_GUI(root)
     root.mainloop()
+
+if __name__ == "__main__":
+    main()

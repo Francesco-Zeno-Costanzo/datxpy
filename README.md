@@ -13,8 +13,8 @@ can also be performed via a graphical user interface (GUI) by running gui.py
 import numpy as np
 import matplotlib.pyplot as plt
 
-from reader import HDF5Reader
-from utils import fill_nodata, remove_nodata  # Import utility functions
+from datxpy.reader import HDF5Reader
+from datxpy.utils import fill_nodata, remove_nodata  # Import utility functions
 
 file_path = "---.datx"
 reader = HDF5Reader(file_path)
