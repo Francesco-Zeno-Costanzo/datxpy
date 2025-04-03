@@ -161,11 +161,13 @@ class HDF5_GUI:
         Parameters
         ----------
         op : str, {"raw", "fill", "baseline"}
-            Operation to do to the data before plotting it.
+            Operation to apply to the data before plotting it.
+
             The options are:
-            1) raw : the data is plotted as read from the file.
-            2) fill : the nans are filled with a nearest neighbor interpolation.
-            3) baseline : the data is fitted with a plane which is then removed.
+
+            - **"raw"**: The data is plotted as read from the file.
+            - **"fill"**: The NaN values are filled using nearest neighbor interpolation.
+            - **"baseline"**: The data is fitted with a plane, which is then removed.
         '''
 
         if self.reader is None or self.data is None:
@@ -247,19 +249,25 @@ class HDF5_GUI:
 
     
     def plot_raw_data(self):
-        ''' Function to plot raw data from file
+        ''' 
+        Function to plot raw data from file.
+        Call plot_data with op="raw"
         '''
         self.plot_data('raw')
 
    
     def fill_no_data_func(self):
-        ''' Fill the no data values and update the plot
+        ''' 
+        Fill the no data values and update the plot.
+        Call plot_data with op="fill"
         '''
         self.plot_data('fill')
 
     
     def modify_data(self):
-        ''' Remove baseline and update plot
+        ''' 
+        Remove baseline and update plot.
+        Call plot_data with op="baseline"
         '''
         self.plot_data('baseline')
     
@@ -324,8 +332,11 @@ class HDF5_GUI:
             messagebox.showerror("Error", f"Unable to save the plot: {e}")
 
 def main():
+    '''
+    Entry point. Run the GUI
+    '''
     root = tk.Tk()
-    app  = HDF5_GUI(root)
+    HDF5_GUI(root)
     root.mainloop()
 
 if __name__ == "__main__":
