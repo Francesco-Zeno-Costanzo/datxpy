@@ -12,7 +12,7 @@ For now, the only way to install **datxpy** is by cloning the repository:
 git clone https://github.com/Francesco-Zeno-Costanzo/datxpy.git
 cd datxpy
 pip install -r requirements.txt
-pip install 
+pip install .
 ```
 
 ## HDF5Reader
