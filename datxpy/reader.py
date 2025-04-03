@@ -15,41 +15,32 @@ class HDF5Reader:
 
     Example
     -------
-    >>> import numpy as np
-    >>> import matplotlib.pyplot as plt
-    >>> from datxpy.reader import HDF5Reader
-    >>> from datxpy.utils import fill_nodata, remove_nodata  # Import utility functions
+    .. code-block:: python
 
-    >>> file_path = "---.datx"
-    >>> reader = HDF5Reader(file_path)
+        import numpy as np
+        import matplotlib.pyplot as plt
+        from datxpy.reader import HDF5Reader
+       
+        file_path = "---.datx"
+        reader = HDF5Reader(file_path)
 
-    >>> reader.show_struct()
+        reader.show_struct()
 
-    >>> data = reader.read()
-    >>> surface = data['Measurement']['Thickness']
+        data = reader.read()
+    
+    From now on 'data' is a normal dictionary, which contains all the information
+    organized in other dictionaries and which you can explore by accessing
+    the elements that interest you most.
 
-    >>> z_vals  = surface['values'] * 1e-3
-    >>> no_data = surface['attributes']['No Data'] * 1e-3
+    .. code-block:: python
+    
+        surface = data['Measurement']['Thickness']
+        print(surface)
 
-    >>> x_grid, y_grid = np.meshgrid(np.arange(0, z_vals.shape[1]),
-    ...                              np.arange(0, z_vals.shape[0]))
-    >>> x_grid = x_grid * surface['attributes']['X Converter']['Parameters'][1] * 1e6
-    >>> y_grid = y_grid * surface['attributes']['Y Converter']['Parameters'][1] * 1e6
-
-    >>> z_vals = remove_nodata(z_vals, no_data)
-    >>> plt.pcolormesh(x_grid, y_grid, z_vals, cmap='plasma')
-    >>> plt.xlabel('x [μm]', fontsize=15)
-    >>> plt.ylabel('y [μm]', fontsize=15)
-    >>> cbar = plt.colorbar()
-    >>> plt.show()
-
-    >>> z_vals = fill_nodata(x_grid, y_grid, z_vals, no_data)
-
-    >>> plt.pcolormesh(x_grid, y_grid, z_vals, cmap='plasma')
-    >>> plt.xlabel('x [μm]', fontsize=15)
-    >>> plt.ylabel('y [μm]', fontsize=15)
-    >>> cbar = plt.colorbar()
-    >>> plt.show()
+        z_vals  = surface['values']
+        print(z_vals)
+    
+    For more information see the usage page
     '''
 
     def __init__(self, file_path):
